@@ -2,18 +2,18 @@
 	"name": "sincer",
 	"version": "0.0.1",
 	"description": "Terminal client for time monitoring.",
-	"main": "./bundled.js",
+	"main": "./sincer.js",
 	"engines": {
-		"node": ">=7"
+		"node": ">=14"
 	},
 	"bin": {
-		"sincer": "./bundled.js"
+		"sincer": "./bin/sincer.js"
 	},
 	"scripts": {
 		"start": "node .",
 		"prestart": "npm run build",
 		"prepublish": "npm run build",
-		"build": "npx esbuild index.js --outfile=bundled.js --target=node7"
+		"build": "npx esbuild index.js --outfile=./bin/sincer.js --target=node14,es6"
 	},
 	"repository": {
 		"type": "git",
