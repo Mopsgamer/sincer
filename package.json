@@ -1,11 +1,14 @@
 {
-  "name": "time-since-cli",
+  "name": "sincer",
   "version": "0.0.1",
-  "description": "Analogue of TimeSince mobile app.",
+  "description": "Terminal client for time monitoring.",
   "main": "index.js",
+  "engines": {
+	"node": ">=4"
+  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Mopsgamer/time-since-cli.git"
+    "url": "git+https://github.com/Mopsgamer/sincer.git"
   },
   "keywords": [
     "time-since",
@@ -16,9 +19,9 @@
   "author": "Mopsgamer",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Mopsgamer/time-since-cli/issues"
+    "url": "https://github.com/Mopsgamer/sincer/issues"
   },
-  "homepage": "https://github.com/Mopsgamer/time-since-cli#readme",
+  "homepage": "https://github.com/Mopsgamer/sincer#readme",
   "dependencies": {
     "chalk": "^5.3.0",
     "commander": "^12.0.0",

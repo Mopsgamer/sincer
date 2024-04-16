@@ -13,7 +13,7 @@ const defaultData = {
 
 const data = {
 	raw: null,
-	file: path.join(__dirname, 'time-since-cli.yaml'),
+	file: path.join(__dirname, 'sincer.yaml'),
 	exists() {
 		return fs.existsSync(this.file)
 	},
@@ -128,7 +128,7 @@ program.command('remove [name]')
 .action((name) => {
 	const {entries} = data.raw
 	if (name) {
-		entries.splice(findEntryIndex(name), 1) 
+		entries.splice(findEntryIndex(name), 1)
 	} else {
 		entries.length = 0
 	}
