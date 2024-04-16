@@ -71,11 +71,13 @@ function findEntry (name) {
 
 program.command('list')
 .aliases(['ls'])
+.description('list of entries')
 .action(() => {
 	print.all()
 })
 program.command('add')
 .aliases(['new', 'create'])
+.description('create entry')
 .option('--name [name]')
 .option('--date [date]')
 .option('--below')
@@ -92,18 +94,21 @@ program.command('add')
 	print.all()
 })
 program.command('redate <name> [newdate]')
+.description('set entry date')
 .action((name, newdate) => {
 	const entry = findEntry(name)
 	Object.merge(entry, createEntry(name, newdate))
 	print.all()
 })
 program.command('rename <name> [newname]')
+.description('set entry name')
 .action((name, newname) => {
 	const entry = findEntry(name)
 	entry.name = newname
 	print.all()
 })
 program.command('up <name> [count]')
+.description('move entry up')
 .action((name, count) => {
 	count ??= Infinity
 	const entryIndex = findEntryIndex(name)
@@ -114,6 +119,7 @@ program.command('up <name> [count]')
 	print.all()
 })
 program.command('down <name> [count]')
+.description('move entry down')
 .action((name, count) => {
 	count ??= Infinity
 	const entryIndex = findEntryIndex(name)
@@ -125,6 +131,7 @@ program.command('down <name> [count]')
 })
 program.command('remove [name]')
 .aliases(['rm'])
+.description('delete entries')
 .action((name) => {
 	const {entries} = data.raw
 	if (name) {
@@ -137,6 +144,7 @@ program.command('remove [name]')
 })
 program.command('reset')
 .aliases(['rs'])
+.description('reset all entries and settings')
 .action((name) => {
         data.raw = defaultData
         data.save()
