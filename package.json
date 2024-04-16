@@ -1,0 +1,31 @@
+{
+  "name": "time-since-cli",
+  "version": "0.0.1",
+  "description": "Analogue of TimeSince mobile app.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mopsgamer/time-since-cli.git"
+  },
+  "keywords": [
+    "time-since",
+    "cli",
+    "node",
+    "npm"
+  ],
+  "author": "Mopsgamer",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Mopsgamer/time-since-cli/issues"
+  },
+  "homepage": "https://github.com/Mopsgamer/time-since-cli#readme",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.0.0",
+    "ms": "^2.1.3",
+    "yaml": "^2.4.1"
+  },
+  "bin": {
+    "sincer": "index.js"
+  }
+}
