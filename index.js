@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const fs = require('fs')
 const path = require('path')
-const ms = require('ms')
+const prettyms = import('pretty-ms')
 const {program} = require('commander')
 const chalk = import('chalk')
 const yaml = require('yaml')
@@ -39,6 +39,7 @@ const print = {
 	async entry(entry) {
 		const entryDate = new Date(entry.since)
 		const time = new Date() - entryDate
+		const {default: ms} = await prettyms
 		const {Chalk} = await chalk
 		const c = new Chalk()
 		console.log(`${c.bgGreen(entry.name)} ${c.green(entry.locale)} ${ms(time)}`)
