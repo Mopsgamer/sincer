@@ -99,7 +99,7 @@ program.command('redate <name> [newdate]')
 .action((name, newdate) => {
 	const entry = findEntry(name)
 	if(!entry) return
-	const newentry = createEntry(name, newdate)
+	const newentry = createEntry(name, newdate || new Date())
 	for(const key in newentry) entry[key] = newentry[key]
 	data.save()
 	print.all()
