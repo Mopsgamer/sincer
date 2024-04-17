@@ -6,10 +6,7 @@ Node.js terminal client for time monitoring. Inspired by [TimeSince](https://pla
 
 ## Installation
 > [!WARNING]  
-> You cannot install this package because it is under active development. If you want to force try it out, use `npm install -g Mopsgamer/sincer`.
-```bash
-npm install -g sincer
-```
+> You cannot install this package because it is under active development. If you want to force try it out, clone it, open repo folder in terminal. Type `npm install; npm install -g .`.
 
 ## Usage
 ```
