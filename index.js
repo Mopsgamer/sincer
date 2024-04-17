@@ -1,13 +1,15 @@
 #!/usr/bin/env node
 const fs = require('fs')
 const path = require('path')
+const pm = require('picomatch')
 const prettyms = import('pretty-ms')
 const {program} = require('commander')
 const chalk = import('chalk')
 const yaml = require('yaml')
+const merge = require('merge')
 
 const defaultData = {
-	entries: [],
+	records: [],
 	count: 0
 }
 
@@ -17,14 +19,17 @@ const data = {
 	exists() {
 		return fs.existsSync(this.file)
 	},
-	readBuff() {
+	readCfg() {
 		return this.exists() ? fs.readFileSync(this.file) : null
 	},
-	read() {
-		return this.exists() ? yaml.parse(this.readBuff().toString()) : null
+	parseCfg() {
+		return this.exists() ? yaml.parse(this.readCfg().toString()) : null
 	},
-	load() {
-		return this.raw = this.read() ?? defaultData
+	loadCfg() {
+		return this.raw = merge(this.parseCfg() ?? {}, defaultData)
+	},
+	load(cfg) {
+		return this.raw = merge(cfg ?? {}, defaultData)
 	},
 	string(val) {
 		return yaml.stringify(val ?? this.raw)
@@ -33,40 +38,50 @@ const data = {
 		fs.writeFileSync(this.file, this.string())
 	}
 }
-data.load()
+data.loadCfg()
 
 const print = {
 	/**
 	 * @param {import('chalk').BackgroundColorName} bgcolor
 	 * @param {import('chalk').ForegroundColorName} fgcolor
 	 */
-	async entryStr(entry, bgcolor = 'bgGray', fgcolor = 'gray', dim = false) {
-		const entryDate = new Date(entry.since)
-		const time = new Date() - entryDate
+	async recordStr(record, bgcolor = 'bgGray', fgcolor = 'gray', dim = false) {
+		const recordDate = new Date(record.since)
+		const time = new Date() - recordDate
 		const {default: ms} = await prettyms
 		const {Chalk} = await chalk
 		const c = new Chalk()
-		const str = `${c[bgcolor].white(entry.name)} ${c[fgcolor](entry.locale)} ${ms(time)}`
+		const str = `${c[bgcolor].white(record.name)} ${c[fgcolor](record.locale)} ${ms(time)}`
 		return dim ? c.dim(str) : str
 	},
-	async entry(entry) {
-		console.log(await print.entryStr(entry))
+	async record(record) {
+		console.log(await print.recordStr(record))
 	},
-	async entryAdded(entry) {
-		console.log(`added: ${await print.entryStr(entry, 'bgGreen', 'green')}`)
+	async recordAdded(record) {
+		console.log(`added: ${await print.recordStr(record, 'bgGreen', 'green')}`)
 	},
-	async entryRemoved(entry) {
-		console.log(`removed: ${await print.entryStr(entry, 'bgRed', 'red')}`)
+	async recordRemoved(record) {
+		console.log(`removed: ${await print.recordStr(record, 'bgRed', 'red')}`)
 	},
-	async entryChanged(entry, old) {
-		console.log(`changed: ${await print.entryStr(entry, 'bgBlue', 'blue', true)} -> ${await print.entryStr(old, 'bgBlue', 'blue')}`)
+	async recordChanged(record, old) {
+		console.log(`changed: ${await print.recordStr(record, 'bgBlue', 'blue', true)} -> ${await print.recordStr(old, 'bgBlue', 'blue')}`)
 	},
-	async all() {
-		if (data.raw.entries.length === 0) {
-			console.log('no entries')
+	async all(name) {
+		if (data.raw.records.length === 0) {
+			console.log('no records')
 		}
-		for (const entry of data.raw.entries) {
-			await print.entry(entry)
+		if (typeof name === 'string') {
+			const filtEntries = findEntryAll(name)
+			if (filtEntries.length === 0) {
+				console.log('no matches')
+			}
+			for (const record of filtEntries) {
+				await print.record(record)
+			}
+			return
+		}
+		for (const record of data.raw.records) {
+			await print.record(record)
 		}
 	}
 }
@@ -76,107 +91,116 @@ function tempName(n) {return 'timer-' + n}
 
 function createEntry(name, date) {
 	const d = date instanceof Date ? date : new Date(date)
-	const entry = {
+	const record = {
 		name: name ?? tempName(data.raw.count),
 		locale: d.toLocaleString(),
 		since: d.toJSON()
 	}
-	return entry
+	return record
 }
 function findEntryIndex(name) {
-	return data.raw.entries.findIndex(entry => entry.name === name)
-}
-function findEntry(name) {
-	return data.raw.entries.find(entry => entry.name === name)
+	const matcher = pm(name)
+	return data.raw.records.findIndex(record => matcher(record.name))
 }
 
-program.command('list')
+function findEntry(name) {
+	const matcher = pm(name)
+	return data.raw.records.find(record => matcher(record.name))
+}
+
+function findEntryAll(name) {
+	const matcher = pm(name)
+	return data.raw.records.filter(record => matcher(record.name))
+}
+
+program.command('list [name]')
 	.aliases(['ls'])
-	.description('list of entries')
-	.action(() => {
-		print.all()
+	.description('get list of records')
+	.action((name) => {
+		print.all(name)
 	})
 program.command('add [name]')
 	.aliases(['new', 'create'])
-	.description('create entry')
+	.description('create record')
 	.option('--date [date]')
 	.option('--below')
 	.action((name, {date, below}) => {
-		const {entries, count} = data.raw
+		const {records, count} = data.raw
 		++data.raw.count
 		const d = date ? new Date(date) : new Date()
-		const entry = createEntry(name, d)
+		const record = createEntry(name, d)
 		if (below)
-			entries.push(entry)
+			records.push(record)
 		else
-			entries.unshift(entry)
+			records.unshift(record)
 		data.save()
 		print.all()
 	})
 program.command('redate <name> [newdate]')
-	.description('set entry date')
+	.description('set record date')
 	.action((name, newdate) => {
-		const entry = findEntry(name)
-		if (!entry) return
-		const newentry = createEntry(name, newdate || new Date())
-		for (const key in newentry) entry[key] = newentry[key]
+		const record = findEntry(name)
+		if (!record) return
+		const newrecord = createEntry(name, newdate || new Date())
+		merge(record, newrecord)
 		data.save()
-		print.entryChanged(newentry, entry)
+		print.recordChanged(newrecord, record)
 	})
 program.command('rename <name> [newname]')
-	.description('set entry name')
+	.description('set record name')
 	.action((name, newname) => {
-		const entry = findEntry(name)
-		const oldentry = {...entry}
-		entry.name = newname
+		const record = findEntry(name)
+		const oldrecord = {...record}
+		record.name = newname
 		data.save()
-		print.entryChanged(entry, oldentry)
+		print.recordChanged(record, oldrecord)
 	})
 program.command('up <name> [count]')
-	.description('move entry up')
+	.description('move record up')
 	.action((name, count) => {
 		count ??= Infinity
-		const entryIndex = findEntryIndex(name)
-		const {entries} = data.raw
-		const entry = entries[entryIndex]
-		entries.splice(entryIndex, 1)
-		entries.splice(Math.max(0, entryIndex - count), 0, entry)
+		const recordIndex = findEntryIndex(name)
+		const {records} = data.raw
+		const record = records[recordIndex]
+		records.splice(recordIndex, 1)
+		records.splice(Math.max(0, recordIndex - count), 0, record)
 		data.save()
 		console.log('moved up')
 	})
 program.command('down <name> [count]')
-	.description('move entry down')
+	.description('move record down')
 	.action((name, count) => {
 		count ??= Infinity
-		const entryIndex = findEntryIndex(name)
-		const {entries} = data.raw
-		const entry = data.raw.entries[entryIndex]
-		entries.splice(entryIndex, 1)
-		entries.splice(Math.min(entries.length - 1, entryIndex + count), 0, entry)
+		const recordIndex = findEntryIndex(name)
+		const {records} = data.raw
+		const record = data.raw.records[recordIndex]
+		records.splice(recordIndex, 1)
+		records.splice(Math.min(records.length - 1, recordIndex + count), 0, record)
 		data.save()
 		console.log('moved up')
 	})
 program.command('remove [name]')
 	.aliases(['rm'])
-	.description('delete entries')
+	.description('delete records')
 	.action((name) => {
-		const {entries} = data.raw
+		const {records} = data.raw
 		if (name) {
-			for (let entryIndex = findEntryIndex(name); entryIndex >= 0; entryIndex = findEntryIndex(name)) {
-				print.entryRemoved(entries[entryIndex])
-				entries.splice(entryIndex, 1)
+			for (let recordIndex = findEntryIndex(name); recordIndex >= 0; recordIndex = findEntryIndex(name)) {
+				print.recordRemoved(records[recordIndex])
+				records.splice(recordIndex, 1)
 			}
 		} else {
-			entries.length = 0
+			records.length = 0
 			console.log('all removed')
 		}
 		data.save()
 	})
 program.command('reset')
 	.aliases(['rs'])
-	.description('reset all entries and settings')
+	.description('reset all records and settings')
 	.action(() => {
 		data.raw = defaultData
 		data.save()
 	})
+	.command('counter')
 program.parse()
