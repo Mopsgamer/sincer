@@ -2,7 +2,7 @@
 	"name": "sincer",
 	"version": "0.0.1",
 	"description": "Terminal client for time monitoring.",
-	"main": "./sincer.js",
+	"main": "./lib/index.js",
 	"engines": {
 		"node": ">=14"
 	},
@@ -13,7 +13,7 @@
 		"start": "node .",
 		"prestart": "npm run build",
 		"prepublish": "npm run build",
-		"build": "npx esbuild index.js --outfile=./bin/sincer.js --target=node14,es6"
+		"build": "npx esbuild ./src/cli.js --bundle --packages=external --outfile=./bin/sincer.js --target=node14,es6 & npx esbuild ./src/index.js --outfile=./lib/index.js --target=node14,es6"
 	},
 	"repository": {
 		"type": "git",
@@ -34,6 +34,7 @@
 	"dependencies": {
 		"chalk": "^5.3.0",
 		"commander": "^12.0.0",
+		"is-dict": "^0.0.2",
 		"merge": "^2.1.1",
 		"picomatch": "^4.0.2",
 		"pretty-ms": "^9.0.0",
