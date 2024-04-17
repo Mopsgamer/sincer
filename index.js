@@ -101,6 +101,7 @@ program.command('redate <name> [newdate]')
 	if(!entry) return
 	const newentry = createEntry(name, newdate)
 	for(const key in newentry) entry[key] = newentry[key]
+	data.save()
 	print.all()
 })
 program.command('rename <name> [newname]')
@@ -108,6 +109,7 @@ program.command('rename <name> [newname]')
 .action((name, newname) => {
 	const entry = findEntry(name)
 	entry.name = newname
+	data.save()
 	print.all()
 })
 program.command('up <name> [count]')
@@ -119,6 +121,7 @@ program.command('up <name> [count]')
 	const entry = entries[entryIndex]
 	entries.splice(entryIndex, 1)
 	entries.splice(Math.max(0, entryIndex - count), 0, entry)
+	data.save()
 	print.all()
 })
 program.command('down <name> [count]')
@@ -130,6 +133,7 @@ program.command('down <name> [count]')
 	const entry = data.raw.entries[entryIndex]
 	entries.splice(entryIndex, 1)
 	entries.splice(Math.min(entries.length-1, entryIndex + count), 0, entry)
+	data.save()
 	print.all()
 })
 program.command('remove [name]')
@@ -149,7 +153,7 @@ program.command('reset')
 .aliases(['rs'])
 .description('reset all entries and settings')
 .action((name) => {
-        data.raw = defaultData
-        data.save()
+	data.raw = defaultData
+	data.save()
 })
 program.parse()
