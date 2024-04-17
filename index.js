@@ -97,7 +97,9 @@ program.command('redate <name> [newdate]')
 .description('set entry date')
 .action((name, newdate) => {
 	const entry = findEntry(name)
-	Object.merge(entry, createEntry(name, newdate))
+	if(!entry) return
+	const newentry = createEntry(name, newdate)
+	for(const key in newentry) entry[key] = newentry[key]
 	print.all()
 })
 program.command('rename <name> [newname]')
