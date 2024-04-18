@@ -1,4 +1,5 @@
 //@ts-check
+/**@typedef {import('../types/index.d.ts')} Sincer*/
 const fs = require('fs')
 const path = require('path')
 const pm = require('picomatch')
@@ -17,12 +18,11 @@ export const defaultCfg = Object.freeze({
 export const rootPath = path.dirname(__dirname)
 export const defaultCfgPath = path.join(rootPath, 'sincer.yaml')
 
-function isNameGeneratorTemplate(template) {
+export function isNameGeneratorTemplate(template) {
 	return typeof template === 'string' && template.includes('$0')
 }
 
-/**@implements {Sincer.NameGenerator}*/
-class NameGenerator {
+export class NameGenerator {
 	/**
 	 * @param {Sincer.NameGeneratorTemplate} template
 	 * @param {number} counter
@@ -56,7 +56,7 @@ class NameGenerator {
  */
 export function createRecord(name, date) {
 	const d = date instanceof Date ? date : new Date(date)
-	/**@returns {Sincer.Record}*/
+	/**@returns {Sincer.RecordItem}*/
 	const record = {
 		name: name,
 		locale: d.toLocaleString(),
@@ -70,7 +70,7 @@ export function createRecord(name, date) {
  * @param {import('chalk').BackgroundColorName} bgcolor
  * @param {import('chalk').ForegroundColorName} fgcolor
  */
-async function recordStr(record, bgcolor = 'bgGray', fgcolor = 'gray', dim = false) {
+export async function recordStr(record, bgcolor = 'bgGray', fgcolor = 'gray', dim = false) {
 	const recordDate = new Date(record.since)
 	const time = new Date().getTime() - recordDate.getTime()
 	const {default: ms} = await prettyms
@@ -80,10 +80,9 @@ async function recordStr(record, bgcolor = 'bgGray', fgcolor = 'gray', dim = fal
 	return dim ? c.dim(str) : str
 }
 
-/**@implements {Sincer.Manager}*/
 export class Manager {
 
-	/**@type {Sincer.Manager["data"]}*/
+	/**@type {Sincer.ManagerData}*/
 	data = {
 		raw: undefined,
 		isReadable(path = defaultCfgPath) {

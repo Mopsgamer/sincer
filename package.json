@@ -2,6 +2,7 @@
 	"name": "sincer",
 	"version": "0.0.1",
 	"description": "Terminal client for time monitoring.",
+	"types": "./types/index.d.ts",
 	"main": "./lib/index.js",
 	"engines": {
 		"node": ">=14"
