@@ -173,7 +173,7 @@ export class Manager {
 		return records.filter(record => matcher(record.name))
 	}
 
-	add(name, options) {
+	async add(name, options) {
 		if (!this.data.raw) {
 			this.printBadCfg()
 			return
@@ -207,7 +207,8 @@ export class Manager {
 			this.printBadCfg()
 			return
 		}
-		const record = this.findRecord(this.data.raw.records, name)
+		const {records} = this.data.raw
+		const record = this.findRecord(records, name)
 		if (!record) {
 			console.log(`record '${name}' not found`)
 			return
@@ -246,7 +247,7 @@ export class Manager {
 		this.printRecordChanged(record, oldrecord)
 	}
 
-	moveUp(name, count) {
+	async moveUp(name, count) {
 		if (!this.data.raw) {
 			this.printBadCfg()
 			return
@@ -262,7 +263,7 @@ export class Manager {
 		console.log(`moved up by ${recordIndex - recordNewIndex}`)
 	}
 
-	moveDown(name, count) {
+	async moveDown(name, count) {
 		if (!this.data.raw) {
 			this.printBadCfg()
 			return
@@ -278,7 +279,7 @@ export class Manager {
 		console.log(`moved down by ${recordNewIndex - recordIndex}`)
 	}
 
-	remove(name) {
+	async remove(name) {
 		if (!this.data.raw) {
 			this.printBadCfg()
 			return
@@ -303,7 +304,7 @@ export class Manager {
 		this.data.save()
 	}
 
-	reset() {
+	async reset() {
 		this.data.raw = defaultCfg
 		this.data.save()
 		console.log(`reset completed`)
