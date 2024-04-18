@@ -219,14 +219,22 @@ export class Manager {
 		this.data.save()
 	}
 
-	rename(name, newname) {
+	async rename(name, newname) {
 		if (!this.data.raw) {
 			this.printBadCfg()
 			return
 		}
-		const record = this.findRecord(this.data.raw.records, name)
+		const {records} = this.data.raw
+		const recordIndex = this.findRecordIndex(records, name)
+		const record = records[recordIndex]
 		if (!record) {
 			console.log(`record '${name}' not found`)
+			return
+		}
+		const similar = this.findRecord(records.slice(recordIndex + 1), name)
+		if (similar) {
+			console.log(`can not rename ${await recordStr(record)}`)
+			this.printRecordExists(similar)
 			return
 		}
 		const oldrecord = {...record}
