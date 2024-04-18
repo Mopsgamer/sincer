@@ -133,7 +133,7 @@ export class Manager {
 		console.log(`removed: ${await recordStr(record, 'bgRed', 'red')}`)
 	}
 	async printRecordChanged(record, old) {
-		console.log(`changed: ${await recordStr(record, 'bgBlue', 'blue', true)} -> ${await recordStr(old, 'bgBlue', 'blue')}`)
+		console.log(`changed: ${await recordStr(old, 'bgBlue', 'blue', true)} -> ${await recordStr(record, 'bgBlue', 'blue')}`)
 	}
 	async printAll(name) {
 		if (!this.data.raw) {
@@ -203,7 +203,7 @@ export class Manager {
 
 	}
 
-	redate(name, newdate) {
+	async redate(name, newdate) {
 		if (!this.data.raw) {
 			this.printBadCfg()
 			return
@@ -214,9 +214,9 @@ export class Manager {
 			return
 		}
 		const newrecord = createRecord(name, newdate || new Date())
+		await this.printRecordChanged(newrecord, record)
 		merge(record, newrecord)
 		this.data.save()
-		this.printRecordChanged(newrecord, record)
 	}
 
 	rename(name, newname) {
