@@ -224,6 +224,10 @@ export class Manager {
 			this.printBadCfg()
 			return
 		}
+		if (!newname) {
+			console.log('bad new name')
+			return
+		}
 		const {records} = this.data.raw
 		const recordIndex = this.findRecordIndex(records, name)
 		const record = records[recordIndex]
