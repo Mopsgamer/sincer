@@ -20,7 +20,7 @@ To update:
 ```
 git fetch
 git pull
-npm install -g .
+npm install
 ```
 ## Usage
 ```
