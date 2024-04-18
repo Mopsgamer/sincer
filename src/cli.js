@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const {program} = require('commander')
+const {program, Argument} = require('commander')
 const {Manager} = require('.')
 
 const sincer = new Manager()
@@ -34,6 +34,14 @@ program.command('rename')
 	.description('set record name')
 	.action((name, newname) => {
 		sincer.rename(name, newname)
+	})
+program.command('swap')
+	.addArgument(new Argument('<mode>', 'swap mode').choices(['places', 'names']))
+	.argument('<name>', 'glob pattern. see https://www.npmjs.com/package/picomatch#globbing-features')
+	.argument('<name2>', 'glob pattern. see https://www.npmjs.com/package/picomatch#globbing-features')
+	.description('swap two records')
+	.action((mode, name, name2) => {
+		sincer.swap(name, name2, mode)
 	})
 program.command('up')
 	.argument('<name>', 'glob pattern. see https://www.npmjs.com/package/picomatch#globbing-features')

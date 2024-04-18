@@ -198,8 +198,36 @@ export class Manager {
 		this.printRecordAdded(record)
 	}
 
-	swap(name, name2) {
-
+	async swap(name, name2, mode) {
+		mode ??= 'names'
+		if (!this.data.raw) {
+			this.printBadCfg()
+			return
+		}
+		const {records} = this.data.raw
+		const record = this.findRecord(records, name)
+		if (!record) {
+			console.log(`record '${name}' not found`)
+			return
+		}
+		const record2 = this.findRecord(records.filter(r => r !== record), name2)
+		if (!record2) {
+			console.log(`second record '${name2}' not found`)
+			return
+		}
+		if (mode === 'names') {
+			await this.printRecordChanged(record, merge(true, record, {name: record2.name}));
+			await this.printRecordChanged(record2, merge(true, record2, {name: record.name}));
+			[record.name, record2.name] = [record2.name, record.name]
+		} else if (mode === 'places') {
+			await this.printRecordChanged(record, record2)
+			await this.printRecordChanged(record2, record)
+			const temp = {...record2}
+			merge(record2, record)
+			merge(record, temp)
+		}
+		this.data.save()
+		console.log('swap completed')
 	}
 
 	async redate(name, newdate) {
