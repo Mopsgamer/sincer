@@ -127,13 +127,13 @@ export class Manager {
 		console.log(`'${record.name}' already exists: ${await recordStr(record, 'bgGreen', 'green')}`)
 	}
 	async printRecordAdded(record) {
-		console.log(`added: ${await recordStr(record, 'bgGreen', 'green')}`)
+		console.log(`added: ${await recordStr(record, 'bgGreenBright', 'greenBright')}`)
 	}
 	async printRecordRemoved(record) {
-		console.log(`removed: ${await recordStr(record, 'bgRed', 'red')}`)
+		console.log(`removed: ${await recordStr(record, 'bgRedBright', 'redBright')}`)
 	}
 	async printRecordChanged(record, old) {
-		console.log(`changed: ${await recordStr(old, 'bgBlue', 'blue', true)} -> ${await recordStr(record, 'bgBlue', 'blue')}`)
+		console.log(`changed: ${await recordStr(old, 'bgBlueBright', 'blueBright', true)} -> ${await recordStr(record, 'bgBlueBright', 'blueBright')}`)
 	}
 	async printAll(name) {
 		if (!this.data.raw) {
