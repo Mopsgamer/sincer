@@ -9,20 +9,22 @@ const yaml = require('yaml')
 const {merge} = require('merge')
 const {default: isDict} = require('is-dict')
 
+
 /**@type {Sincer.Config}*/
-export const defaultCfg = Object.freeze({
+const defaultCfg = Object.freeze({
 	records: [],
 	count: 0
 })
 
-export const rootPath = path.dirname(__dirname)
-export const defaultCfgPath = path.join(rootPath, 'sincer.yaml')
 
-export function isNameGeneratorTemplate(template) {
+const rootPath = path.dirname(__dirname)
+const defaultCfgPath = path.join(rootPath, 'sincer.yaml')
+
+function isNameGeneratorTemplate(template) {
 	return typeof template === 'string' && template.includes('$0')
 }
 
-export class NameGenerator {
+class NameGenerator {
 	/**
 	 * @param {Sincer.NameGeneratorTemplate} template
 	 * @param {number} counter
@@ -54,7 +56,7 @@ export class NameGenerator {
  * @param {string} name
  * @param {Date | string} date
  */
-export function createRecord(name, date) {
+function createRecord(name, date) {
 	const d = date instanceof Date ? date : new Date(date)
 	/**@returns {Sincer.RecordItem}*/
 	const record = {
@@ -70,7 +72,7 @@ export function createRecord(name, date) {
  * @param {import('chalk').BackgroundColorName} bgcolor
  * @param {import('chalk').ForegroundColorName} fgcolor
  */
-export async function recordStr(record, bgcolor = 'bgGray', fgcolor = 'gray', dim = false) {
+async function recordStr(record, bgcolor = 'bgGray', fgcolor = 'gray', dim = false) {
 	const recordDate = new Date(record.since)
 	const time = new Date().getTime() - recordDate.getTime()
 	const {default: ms} = await prettyms
@@ -80,38 +82,63 @@ export async function recordStr(record, bgcolor = 'bgGray', fgcolor = 'gray', di
 	return dim ? c.dim(str) : str
 }
 
-export class Manager {
+class Manager {
+
+	/**
+	 * @type {null | string}
+	 */
+	path = defaultCfgPath;
+
+	/**
+	 * @param {null | string} [path]
+	 */
+	constructor(path) {
+		// path will be equal to defaultCfgPath if undefined.
+		// If null, will not save the data on data.save().
+		if (path !== undefined) {
+			this.path = path
+		}
+	}
 
 	/**@type {Sincer.ManagerData}*/
 	data = {
-		raw: undefined,
-		isReadable(path = defaultCfgPath) {
-			const exists = fs.existsSync(path)
+		/**@type {Sincer.Config}*/
+		raw: merge(true, defaultCfg),
+		isReadable: () => {
+			if (this.path === null) return false
+			const exists = fs.existsSync(this.path)
 			if (!exists) return false
 			try {
-				const doc = yaml.parse(fs.readFileSync(path).toString())
+				const doc = yaml.parse(fs.readFileSync(this.path).toString())
 				return isDict(doc)
 			} catch {
 				return false
 			}
 		},
-		readCfg(path = defaultCfgPath) {
-			return this.isReadable(path) ? fs.readFileSync(path) : undefined
+		readCfg: () => {
+			if (this.path === null || !this.data.isReadable()) {
+				throw new Error('Config is unreadable.')
+			}
+			return fs.readFileSync(this.path)
 		},
-		parseCfg(path = defaultCfgPath) {
-			return this.isReadable(path) ? yaml.parse(fs.readFileSync(path).toString()) : undefined
+		parseCfg: () => {
+			if (this.path === null || !this.data.isReadable()) {
+				throw new Error('Config is unreadable.')
+			}
+			return yaml.parse(fs.readFileSync(this.path).toString())
 		},
-		loadCfg(path = defaultCfgPath) {
-			return this.raw = merge({}, defaultCfg, this.parseCfg(path))
+		loadCfg: () => {
+			return this.raw = merge({}, defaultCfg, this.data.parseCfg())
 		},
-		load(cfg = this.raw) {
+		load: (cfg = this.raw) => {
 			return this.raw = merge({}, defaultCfg, cfg)
 		},
-		string(cfg = this.raw) {
+		string: (cfg = this.raw) => {
 			return yaml.stringify(cfg)
 		},
-		save(path = defaultCfgPath) {
-			fs.writeFileSync(path, this.string())
+		save: () => {
+			if (this.path === null) return;
+			fs.writeFileSync(this.path, this.data.string())
 		}
 	}
 
@@ -346,4 +373,15 @@ export class Manager {
 		return true
 	}
 
+}
+
+module.exports = {
+	defaultCfg,
+	rootPath,
+	defaultCfgPath,
+	isNameGeneratorTemplate,
+	NameGenerator,
+	createRecord,
+	recordStr,
+	Manager
 }
