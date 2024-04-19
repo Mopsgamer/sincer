@@ -176,7 +176,7 @@ export class Manager {
 	async add(name, options) {
 		if (!this.data.raw) {
 			this.printBadCfg()
-			return
+			return false
 		}
 		const {records, count} = this.data.raw
 		name ??= new NameGenerator('timer-$0', count).next().current
@@ -185,7 +185,7 @@ export class Manager {
 		if (similar) {
 			console.log('can not add')
 			this.printRecordExists(similar)
-			return
+			return false
 		}
 		const {date, below} = options ?? {};
 		const d = date ? new Date(date) : new Date()
@@ -196,24 +196,25 @@ export class Manager {
 			records.unshift(record)
 		this.data.save()
 		this.printRecordAdded(record)
+		return true
 	}
 
 	async swap(name, name2, mode) {
 		mode ??= 'names'
 		if (!this.data.raw) {
 			this.printBadCfg()
-			return
+			return false
 		}
 		const {records} = this.data.raw
 		const record = this.findRecord(records, name)
 		if (!record) {
 			console.log(`record '${name}' not found`)
-			return
+			return false
 		}
 		const record2 = this.findRecord(records.filter(r => r !== record), name2)
 		if (!record2) {
 			console.log(`second record '${name2}' not found`)
-			return
+			return false
 		}
 		if (mode === 'names') {
 			await this.printRecordChanged(record, merge(true, record, {name: record2.name}));
@@ -228,57 +229,60 @@ export class Manager {
 		}
 		this.data.save()
 		console.log('swap completed')
+		return true
 	}
 
 	async redate(name, newdate) {
 		if (!this.data.raw) {
 			this.printBadCfg()
-			return
+			return false
 		}
 		const {records} = this.data.raw
 		const record = this.findRecord(records, name)
 		if (!record) {
 			console.log(`record '${name}' not found`)
-			return
+			return false
 		}
 		const newrecord = createRecord(name, newdate || new Date())
 		await this.printRecordChanged(newrecord, record)
 		merge(record, newrecord)
 		this.data.save()
+		return true
 	}
 
 	async rename(name, newname) {
 		if (!this.data.raw) {
 			this.printBadCfg()
-			return
+			return false
 		}
 		if (!newname) {
 			console.log('bad new name')
-			return
+			return false
 		}
 		const {records} = this.data.raw
 		const recordIndex = this.findRecordIndex(records, name)
 		const record = records[recordIndex]
 		if (!record) {
 			console.log(`record '${name}' not found`)
-			return
+			return false
 		}
 		const similar = this.findRecord(records.slice(recordIndex + 1), name)
 		if (similar) {
 			console.log(`can not rename ${await recordStr(record)}`)
 			this.printRecordExists(similar)
-			return
+			return false
 		}
 		const oldrecord = {...record}
 		record.name = newname
 		this.data.save()
 		this.printRecordChanged(record, oldrecord)
+		return true
 	}
 
 	async moveUp(name, count) {
 		if (!this.data.raw) {
 			this.printBadCfg()
-			return
+			return false
 		}
 		count ??= Infinity
 		const {records} = this.data.raw
@@ -289,12 +293,13 @@ export class Manager {
 		records.splice(recordNewIndex, 0, record)
 		this.data.save()
 		console.log(`moved up by ${recordIndex - recordNewIndex}`)
+		return true
 	}
 
 	async moveDown(name, count) {
 		if (!this.data.raw) {
 			this.printBadCfg()
-			return
+			return false
 		}
 		count ??= Infinity
 		const {records} = this.data.raw
@@ -305,21 +310,22 @@ export class Manager {
 		records.splice(recordNewIndex, 0, record)
 		this.data.save()
 		console.log(`moved down by ${recordNewIndex - recordIndex}`)
+		return true
 	}
 
 	async remove(name) {
 		if (!this.data.raw) {
 			this.printBadCfg()
-			return
+			return false
 		}
 		const {records} = this.data.raw
 		if (records.length === 0) {
 			console.log('no records')
-			return
+			return false
 		}
 		if (!name || !this.findRecord(records, name)) {
 			console.log(`records '${name}' not found`)
-			return
+			return false
 		}
 		for (
 			let recordIndex = this.findRecordIndex(records, name);
@@ -330,12 +336,14 @@ export class Manager {
 			records.splice(recordIndex, 1)
 		}
 		this.data.save()
+		return true
 	}
 
 	async reset() {
 		this.data.raw = defaultCfg
 		this.data.save()
 		console.log(`reset completed`)
+		return true
 	}
 
 }
