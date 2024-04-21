@@ -12,11 +12,8 @@
 	},
 	"scripts": {
 		"start": "node .",
-		"test": "npx mocha ./test",
-		"pretest": "npm run build",
-		"prestart": "npm run build",
-		"prepublish": "npm run build",
-		"build": "npx esbuild ./src/cli.js --bundle --packages=external --outfile=./bin/sincer.js --target=node14 & npx esbuild ./src/index.js --outfile=./lib/index.js --target=node14"
+		"test": "npx mocha -p ./test",
+		"prepublishOnly": "npm run test"
 	},
 	"repository": {
 		"type": "git",
@@ -37,7 +34,6 @@
 	"dependencies": {
 		"chalk": "^5.3.0",
 		"commander": "^12.0.0",
-		"is-dict": "^0.0.2",
 		"merge": "^2.1.1",
 		"picomatch": "^4.0.2",
 		"pretty-ms": "^9.0.0",
@@ -46,7 +42,8 @@
 	"devDependencies": {
 		"@types/mocha": "^10.0.6",
 		"@types/node": "^14.0.0",
-		"chai": "^5.1.0",
+		"chai": "^4.4.1",
+		"chai-as-promised": "^7.1.1",
 		"esbuild": "^0.20.2",
 		"mocha": "^10.4.0"
 	}
