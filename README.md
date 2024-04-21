@@ -8,20 +8,6 @@ Node.js terminal client for time monitoring. Inspired by [TimeSince](https://pla
 > [!WARNING]  
 > You cannot install this package from npm because it is under active development.
 
-If you want to force try it out, clone it.
-
-```
-gh repo clone Mopsgamer/sincer
-npm install
-npm install -g .
-```
-
-To update:
-```
-git fetch
-git pull
-npm install
-```
 ## Usage
 ```
 Usage: sincer [options] [command]
