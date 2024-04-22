@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const {program, Argument} = require('commander')
-const {Manager} = require('../lib')
+const {Manager, version} = require('../lib')
 
 const sincer = new Manager()
 sincer.cfgLoadFromFile()
@@ -27,6 +27,12 @@ const description = {
 	date: 'date time string. example: \'04-13-2024 10:30:00\'. see https://tc39.es/ecma262/multipage/numbers-and-dates.html#sec-date-time-string-format'
 }
 
+program.command('version')
+	.aliases(['v'])
+	.description('print version')
+	.action(function () {
+		console.log(version)
+	})
 program.command('list')
 	.aliases(['ls'])
 	.argument('[name]', description.globSet)
