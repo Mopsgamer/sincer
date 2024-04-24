@@ -5,14 +5,14 @@
 	"types": "./types/index.d.ts",
 	"main": "./lib/index.js",
 	"engines": {
-		"node": ">=14"
+		"node": ">=16"
 	},
 	"bin": {
 		"sincer": "./bin/sincer.js"
 	},
 	"scripts": {
 		"start": "node .",
-		"test": "npx mocha -p ./test",
+		"test": "npx node ./lib/cli.js & npx mocha -p ./test",
 		"prepublishOnly": "npm run test"
 	},
 	"repository": {
@@ -41,10 +41,11 @@
 	},
 	"devDependencies": {
 		"@types/mocha": "^10.0.6",
-		"@types/node": "^14.0.0",
+		"@types/node": "^16.18.96",
 		"chai": "^4.4.1",
 		"chai-as-promised": "^7.1.1",
 		"esbuild": "^0.20.2",
-		"mocha": "^10.4.0"
+		"mocha": "^10.4.0",
+		"node": "^16.20.2"
 	}
 }
