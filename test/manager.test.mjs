@@ -8,32 +8,38 @@ chai.use(chaip)
 const goodCfgPath = path.join(rootPath, 'sincer.test.yaml')
 
 describe('Manager', function () {
-	describe('Actions', function () {
+	it('Actions', async function () {
 		const sincer = new Manager(null)
-		it('showAll empty', function () {
-			chai.assert.isFulfilled(sincer.showAll('*'))
-		})
-		sincer.add('wantrename')
-		it('add', function () {
-			chai.assert.isRejected(sincer.add(''))
-			chai.assert.isFulfilled(sincer.add('1'))
-			chai.assert.isRejected(sincer.add('1'))
-			chai.assert.isFulfilled(sincer.add('2', {}))
-			chai.assert.isRejected(sincer.add('3', 1))
-			chai.assert.isFulfilled(sincer.add('3', 1))
-		})
-		it('redate', function () {
-			chai.assert.isRejected(sincer.redate('unexistedname'))
-			chai.assert.isFulfilled(sincer.redate('2'))
-		})
-		it('rename', function () {
-			chai.assert.isRejected(sincer.rename('unexistedname'))
-			chai.assert.isFulfilled(sincer.rename('wantrename', '0'))
-		})
-		it('showAll', function () {
-			chai.assert.isFulfilled(sincer.showAll())
-			chai.assert.isFulfilled(sincer.showAll('*'))
-		})
+		// showAll empty
+		await sincer.showAll()
+		// add
+		await sincer.add('wantrename')
+		chai.assert.isRejected(sincer.add(''))
+		await sincer.add('1')
+		chai.assert.isRejected(sincer.add('1'))
+		await sincer.add('2', {})
+		await sincer.add('3', 1)
+		// redate
+		chai.assert.isRejected(sincer.redate('unexistedname'))
+		await sincer.redate('2')
+		// rename
+		chai.assert.isRejected(sincer.rename('unexistedname'))
+		await sincer.rename('wantrename', '0')
+		// showAll
+		await sincer.showAll()
+		chai.assert.isRejected(sincer.showAll('sdbhfkjasbdhfkshb'))
+		// swap
+		await sincer.swap('3', '2')
+		chai.assert.isRejected(sincer.swap('2', '2'))
+		// move
+		chai.assert.isRejected(sincer.swap('2', '2'))
+		console.log(await sincer.showAll())
+		await sincer.moveDown('3', 100)
+		console.log(await sincer.showAll())
+		chai.assert.strictEqual('3', sincer.cfg.records[3].name)
+		await sincer.moveDown('3', 100)
+		await sincer.moveDown('3', '100')
+		chai.assert.isRejected(await sincer.moveDown('3', '10000000000000000000000000000000000000000000000000000000000000000000000000000000'))
 	})
 	describe('Config loading', function () {
 		it('Normal manager', function () {
