@@ -10,6 +10,9 @@ const goodCfgPath = path.join(rootPath, 'sincer.test.yaml')
 describe('Manager', function () {
 	describe('Actions', function () {
 		const sincer = new Manager(null)
+		it('showAll empty', function () {
+			chai.assert.isFulfilled(sincer.showAll('*'))
+		})
 		sincer.add('wantrename')
 		it('add', function () {
 			chai.assert.isRejected(sincer.add(''))
@@ -26,6 +29,10 @@ describe('Manager', function () {
 		it('rename', function () {
 			chai.assert.isRejected(sincer.rename('unexistedname'))
 			chai.assert.isFulfilled(sincer.rename('wantrename', '0'))
+		})
+		it('showAll', function () {
+			chai.assert.isFulfilled(sincer.showAll())
+			chai.assert.isFulfilled(sincer.showAll('*'))
 		})
 	})
 	describe('Config loading', function () {
