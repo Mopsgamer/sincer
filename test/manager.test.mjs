@@ -5,8 +5,6 @@ import {Manager, maxRecords, rootPath} from '../lib/index.js'
 
 chai.use(chaip)
 
-const goodCfgPath = path.join(rootPath, 'sincer.test.yaml')
-
 describe('Manager', function () {
 	it('Limit', async function () {
 		const sincer = new Manager(null)
@@ -96,13 +94,21 @@ describe('Manager', function () {
 		})
 	})
 	describe('Config loading', function () {
-		it('Normal manager', function () {
-			const sincer = new Manager(goodCfgPath)
+		const normCfgPath = path.join(rootPath, 'sincer.test.yaml')
+		const oldCfgPath = path.join(rootPath, 'sincer-old.test.yaml')
+		it('Normal cfg', function () {
+			const sincer = new Manager(normCfgPath)
 			chai.assert.strictEqual(sincer.cfg.records.length, 0)
 			sincer.cfgLoadFromFile()
 			chai.assert.strictEqual(sincer.cfg.records.length, 2)
 		})
-		it('Virtual manager', function () {
+		it('Old cfg', function () {
+			const sincer = new Manager(oldCfgPath)
+			chai.assert.strictEqual(sincer.cfg.records.length, 0)
+			sincer.cfgLoadFromFile()
+			chai.assert.strictEqual(sincer.cfg.records.length, 1)
+		})
+		it('Virtual cfg', function () {
 			const sincer = new Manager(null)
 			chai.assert.strictEqual(sincer.cfg.records.length, 0)
 			chai.assert.throws(function () {sincer.cfgSaveToFile()})
