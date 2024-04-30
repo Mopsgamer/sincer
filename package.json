@@ -2,6 +2,7 @@
 	"name": "sincer",
 	"version": "0.0.1",
 	"description": "Terminal client for time monitoring.",
+	"type": "module",
 	"types": "./types/index.d.ts",
 	"main": "./lib/index.js",
 	"engines": {
@@ -43,7 +44,6 @@
 		"@types/mocha": "^10.0.6",
 		"@types/node": "^16.18.96",
 		"chai": "^4.4.1",
-		"chai-as-promised": "^7.1.1",
 		"esbuild": "^0.20.2",
 		"mocha": "^10.4.0",
 		"node": "^16.20.2"
