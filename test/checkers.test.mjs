@@ -1,7 +1,7 @@
 import * as chai from 'chai'
 import {isNameGeneratorTemplate, isConfig, isRecordItem, isRecordName, isRecordSince} from '../lib/index.js'
 
-describe('Methods', function () {
+describe('Checkers', function () {
 	it('isNameGeneratorTemplate', function () {
 		chai.assert.isFalse(isNameGeneratorTemplate('hello'))
 		chai.assert.isTrue(isNameGeneratorTemplate('hello$0'))
