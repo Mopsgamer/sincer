@@ -99,6 +99,8 @@ describe('Manager', function () {
 		it('Normal manager', function () {
 			const sincer = new Manager(goodCfgPath)
 			chai.assert.strictEqual(sincer.cfg.records.length, 0)
+			sincer.cfgLoadFromFile()
+			chai.assert.strictEqual(sincer.cfg.records.length, 2)
 		})
 		it('Virtual manager', function () {
 			const sincer = new Manager(null)
