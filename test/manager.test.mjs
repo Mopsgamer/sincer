@@ -16,52 +16,84 @@ describe('Manager', function () {
 		chai.assert.strictEqual(sincer.cfg.records.length, maxRecords)
 		chai.assert.isRejected(sincer.add('newrecord'))
 	})
-	it('Actions', async function () {
-		const sincer = new Manager(null)
-		//#region showAll when empty
-		await sincer.showAll()
-		//#endregion
-		//#region add
-		await sincer.add('wantrename')
-		await chai.assert.isRejected(sincer.add(''))
-		await sincer.add('1')
-		await chai.assert.isRejected(sincer.add('1'))
-		await sincer.add('2', {})
-		await sincer.add('3', 1)
-		//#endregion
-		//#region redate
-		await chai.assert.isRejected(sincer.redate('unexistedname'))
-		await sincer.redate('2')
-		//#endregion
-		//#region rename
-		await chai.assert.isRejected(sincer.rename('unexistedname'))
-		await sincer.rename('wantrename', '0')
-		//#endregion
-		//#region showAll
-		await sincer.showAll()
-		await sincer.showAll('sdbhfkjasbdhfkshb') // do not throw when no matches
-		//#endregion
-		//#region swap
-		await sincer.swap('3', '2')
-		await chai.assert.isRejected(sincer.swap('2', '2'))
-		await sincer.swap('3', '2')
-		//#endregion
-		//#region moveDown
-		await sincer.moveDown('3', 2)
-		chai.assert.strictEqual('3', sincer.cfg.records[2].name)
-		await sincer.moveDown('3', 'max')
-		await chai.assert.isRejected(sincer.moveDown('3', 'max'))
-		chai.assert.strictEqual('3', sincer.cfg.records[3].name)
-		await chai.assert.isRejected(sincer.moveDown('1', 1e+6))
-		//#endregion
-		//#region moveUp
-		await sincer.moveUp('3', 2)
-		chai.assert.strictEqual('3', sincer.cfg.records[1].name)
-		await sincer.moveUp('3', 'max')
-		await chai.assert.isRejected(sincer.moveUp('3', 'max'))
-		chai.assert.strictEqual('3', sincer.cfg.records[0].name)
-		await chai.assert.isRejected(sincer.moveUp('1', 1e+6))
-		//#endregion
+	describe('Actions', function () {
+		it('showAll', async function () {
+			const sincer = new Manager(null)
+			await sincer.showAll()
+			await sincer.showAll('sdbhfkjasbdhfkshb')
+			await sincer.add('1')
+			await sincer.showAll()
+			await sincer.showAll('sdbhfkjasbdhfkshb')
+		})
+		it('add', async function () {
+			const sincer = new Manager(null)
+			await sincer.add('wantrename')
+			await chai.assert.isRejected(sincer.add(''))
+			await sincer.add('1')
+			await chai.assert.isRejected(sincer.add('1'))
+			await sincer.add('2', {})
+			await sincer.add('3', 1)
+		})
+		it('redate', async function () {
+			const sincer = new Manager(null)
+			await sincer.add('2')
+			await chai.assert.isRejected(sincer.redate('unexistedname'))
+			await sincer.redate('2')
+		})
+		it('rename', async function () {
+			const sincer = new Manager(null)
+			await sincer.add('wantrename')
+			await chai.assert.isRejected(sincer.rename('unexistedname'))
+			await sincer.rename('wantrename', '0')
+		})
+		it('swap', async function () {
+			const sincer = new Manager(null)
+			await sincer.add('0')
+			await sincer.add('1')
+			await sincer.add('2')
+			await sincer.add('3')
+			await sincer.add('4')
+			await sincer.add('5')
+			await sincer.add('6')
+			await sincer.swap('3', '2')
+			await sincer.swap('0', '1')
+			await sincer.swap('1', '6')
+			await sincer.swap('5', '1')
+			await sincer.swap('3', '4')
+			await chai.assert.isRejected(sincer.swap('2', '2'))
+		})
+		it('moveDown', async function () {
+			const sincer = new Manager(null)
+			await sincer.add('0')
+			await sincer.add('1')
+			await sincer.add('2')
+			await sincer.add('3')
+			await sincer.add('4')
+			await sincer.add('5')
+			await sincer.add('6')
+			await sincer.moveDown('3', 2)
+			chai.assert.strictEqual('3', sincer.cfg.records[5].name)
+			await sincer.moveDown('3', 'max')
+			await chai.assert.isRejected(sincer.moveDown('3', 'max'))
+			chai.assert.strictEqual('3', sincer.cfg.records[6].name)
+			await chai.assert.isRejected(sincer.moveDown('1', 1e+6))
+		})
+		it('moveUp', async function () {
+			const sincer = new Manager(null)
+			await sincer.add('0')
+			await sincer.add('1')
+			await sincer.add('2')
+			await sincer.add('3')
+			await sincer.add('4')
+			await sincer.add('5')
+			await sincer.add('6')
+			await sincer.moveUp('3', 2)
+			chai.assert.strictEqual('3', sincer.cfg.records[1].name)
+			await sincer.moveUp('3', 'max')
+			await chai.assert.isRejected(sincer.moveUp('3', 'max'))
+			chai.assert.strictEqual('3', sincer.cfg.records[0].name)
+			await chai.assert.isRejected(sincer.moveUp('1', 1e+6))
+		})
 	})
 	describe('Config loading', function () {
 		it('Normal manager', function () {
