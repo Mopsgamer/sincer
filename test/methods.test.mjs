@@ -1,5 +1,5 @@
 import * as chai from 'chai'
-import {isNameGeneratorTemplate, isConfig, isRecordItem, isRecordName} from '../lib/index.js'
+import {isNameGeneratorTemplate, isConfig, isRecordItem, isRecordName, isRecordSince} from '../lib/index.js'
 
 describe('Methods', function () {
 	it('isNameGeneratorTemplate', function () {
@@ -27,12 +27,13 @@ describe('Methods', function () {
 		chai.assert.isFalse(isRecordItem({name: 's'}))
 		chai.assert.isFalse(isRecordItem({locale: 'a'}))
 		chai.assert.isFalse(isRecordItem({since: 'd'}))
-		const normLocale = new Date().toLocaleString()
+		const normName = 'normal'
 		const normSince = new Date().toJSON()
-		chai.assert.isFalse(isRecordItem({name: '', locale: normLocale, since: normSince}))
-		chai.assert.isFalse(isRecordItem({name: 'normal', locale: '', since: normSince}))
-		chai.assert.isFalse(isRecordItem({name: 'normal', locale: normLocale, since: ''}))
-		chai.assert.isTrue(isRecordItem({name: 'normal', locale: normLocale, since: normSince}))
+		chai.assert.isTrue(isRecordName(normName))
+		chai.assert.isTrue(isRecordSince(normSince))
+		chai.assert.isFalse(isRecordItem({name: '', since: normSince}))
+		chai.assert.isFalse(isRecordItem({name: normName, since: ''}))
+		chai.assert.isTrue(isRecordItem({name: normName, since: normSince}))
 	})
 	it('isRecordName', function () {
 		chai.assert.isFalse(isRecordName(0))
