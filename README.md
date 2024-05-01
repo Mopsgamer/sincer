@@ -7,7 +7,7 @@ Node.js terminal client for time monitoring. Inspired by [TimeSince](https://pla
 - Add tests (80%+).
 
 ## Requirements
-- Node.js 16 or later.
+- Node.js 17 or later.
 
 ## Installation
 > [!WARNING]  
