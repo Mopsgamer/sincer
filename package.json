@@ -13,8 +13,8 @@
 	},
 	"scripts": {
 		"start": "node .",
-		"test": "npx mocha -p ./test",
-		"prepublishOnly": "npm run test"
+		"test": "pnpm mocha -p ./test",
+		"prepublishOnly": "pnpm test"
 	},
 	"repository": {
 		"type": "git",
