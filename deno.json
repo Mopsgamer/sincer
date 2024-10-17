@@ -1,9 +1,0 @@
-{
-  "name": "@m234/sincer",
-  "version": "0.0.1",
-  "tasks": {
-    "compile": "deno compile --allow-env --allow-read --allow-sys --output sincer main.ts"
-  },
-  "exports": "./lib.ts",
-  "imports": { "@std/cli": "jsr:@std/cli@^1.0.6" }
-}
