@@ -1,4 +1,4 @@
 #!/usr/bin/env node
-import {program} from '../lib/cli.js'
+import { program } from "../lib/cli.js";
 
-program.parse()
+program.parse();
