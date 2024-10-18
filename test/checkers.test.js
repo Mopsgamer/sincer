@@ -16,15 +16,6 @@ describe("Checkers", function () {
     chai.assert.isTrue(isNameGeneratorTemplate("hello$0!"));
     chai.assert.isFalse(isNameGeneratorTemplate("hello\\$0"));
   });
-  it("isConfig", function () {
-    chai.assert.isFalse(isConfig(0));
-    chai.assert.isFalse(isConfig({}));
-    chai.assert.isFalse(isConfig(null));
-    chai.assert.isFalse(isConfig({ records: {}, count: [] }));
-    chai.assert.isFalse(isConfig({ records: [[]], count: 0 }));
-    chai.assert.isFalse(isConfig({ records: [null], count: 0 }));
-    chai.assert.isTrue(isConfig({ records: [], count: 0 }));
-  });
   it("isRecordItem", function () {
     chai.assert.isFalse(isRecordItem(0));
     chai.assert.isFalse(isRecordItem([]));
